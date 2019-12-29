@@ -3,6 +3,7 @@ package com.example.rocketmq.controller;
 import com.example.rocketmq.sender.Producer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -29,6 +30,7 @@ public class TestController {
         }
     }
 
+    @RequestMapping(value = "/health", method = RequestMethod.POST)
     public void health(){
         log.info("health success!");
     }

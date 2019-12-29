@@ -28,7 +28,7 @@ public class Consumer implements CommandLineRunner {
      * 初始化RocketMq的监听信息，渠道信息
      */
     private void messageListener(){
-        DefaultMQPushConsumer consumer=new DefaultMQPushConsumer("SpringBootRocketMqGroup");
+        DefaultMQPushConsumer consumer=new DefaultMQPushConsumer(consumerGroup);
         consumer.setInstanceName(this.getClass().getSimpleName());
         try {
             consumer.setNamesrvAddr(nameServerAddr);

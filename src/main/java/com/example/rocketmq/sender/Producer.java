@@ -22,6 +22,8 @@ public class Producer {
     private String producerGroup;
     @Value("${apache.rocketmq.topic}")
     private String consumerTopic;
+    @Value("${apache.rocketmq.order.topic}")
+    private String consumerOrderTopic;
     @Value("${apache.rocketmq.namesrvAddr}")
     private String nameServerAddr;
 
@@ -52,13 +54,14 @@ public class Producer {
 
     public String sendOrder(String body){
         try {
-            Message message = new Message(consumerTopic, body.getBytes(RemotingHelper.DEFAULT_CHARSET));
+            Message message = new Message(consumerOrderTopic, body.getBytes(RemotingHelper.DEFAULT_CHARSET));
             // 发送消息并构建一个queue选择器，保证消息都进入到同一个队列中
             // 重写了MessageQueueSelector 的select方法
             SendResult sendResult = producer.send(message, (list, msg, arg) -> {
                 Integer id = (Integer) arg;
                 return list.get(id);
             }, 0);// 队列的下标
+            log.info("发送响应：MsgId:" + sendResult.getMsgId() + "，发送状态:" + sendResult.getSendStatus());
         } catch (Exception e) {
             e.printStackTrace();
         }

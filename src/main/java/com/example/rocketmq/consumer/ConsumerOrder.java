@@ -5,7 +5,9 @@ import com.example.rocketmq.util.LogUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
+import org.apache.rocketmq.client.consumer.listener.ConsumeOrderlyStatus;
 import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
+import org.apache.rocketmq.client.consumer.listener.MessageListenerOrderly;
 import org.apache.rocketmq.common.consumer.ConsumeFromWhere;
 import org.apache.rocketmq.common.message.Message;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,11 +16,11 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class Consumer implements CommandLineRunner {
+public class ConsumerOrder implements CommandLineRunner {
 
-    @Value("${apache.rocketmq.topic}")
+    @Value("${apache.rocketmq.order.topic}")
     private String consumerTopic;
-    @Value("${apache.rocketmq.consumer.group}")
+    @Value("${apache.rocketmq.consumer.order.group}")
     private String consumerGroup;
     @Value("${apache.rocketmq.namesrvAddr}")
     private String nameServerAddr;
@@ -28,7 +30,7 @@ public class Consumer implements CommandLineRunner {
      * 初始化RocketMq的监听信息，渠道信息
      */
     private void messageListener(){
-        DefaultMQPushConsumer consumer=new DefaultMQPushConsumer("SpringBootRocketMqGroup");
+        DefaultMQPushConsumer consumer=new DefaultMQPushConsumer(consumerGroup);
         consumer.setInstanceName(this.getClass().getSimpleName());
         try {
             consumer.setNamesrvAddr(nameServerAddr);
@@ -42,11 +44,16 @@ public class Consumer implements CommandLineRunner {
             consumer.setConsumeThreadMax(10);
 
             //在此监听中消费信息，并返回消费的状态信息
-            consumer.registerMessageListener((MessageListenerConcurrently) (messageExtList, context) -> {
+            consumer.registerMessageListener((MessageListenerOrderly) (messageExtList, context) -> {
                 LogUtil.bindLogId();
                 Message message = messageExtList.get(0);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 log.info(consumer.getInstanceName()+"接收到了消息："+new String(message.getBody()));
-                return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+                return ConsumeOrderlyStatus.SUCCESS;
             });
             consumer.start();
             log.info("---------->consumer start");

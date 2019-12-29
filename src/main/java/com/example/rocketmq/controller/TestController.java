@@ -20,7 +20,7 @@ public class TestController {
     public void testMq(String s){
         try {
             for (int i = 0;i < 20; i++){
-                producer.send(s+i);
+                producer.sendOrder(s+i);
             }
         } catch (Exception e) {
             e.printStackTrace();

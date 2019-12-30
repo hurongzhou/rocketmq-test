@@ -1,6 +1,9 @@
 package com.example.rocketmq.consumer;
 
 
+import com.alibaba.fastjson.JSONObject;
+import com.example.rocketmq.entity.Student;
+import com.example.rocketmq.service.StudentService;
 import com.example.rocketmq.util.LogUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
@@ -12,13 +15,18 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
+
 @Slf4j
 @Component
-public class Consumer implements CommandLineRunner {
+public class StudentConsumer implements CommandLineRunner {
 
-    @Value("${apache.rocketmq.topic}")
+    @Resource
+    private StudentService studentService;
+
+    @Value("${apache.rocketmq.student.topic}")
     private String consumerTopic;
-    @Value("${apache.rocketmq.consumer.group}")
+    @Value("${apache.rocketmq.consumer.student.group}")
     private String consumerGroup;
     @Value("${apache.rocketmq.namesrvAddr}")
     private String nameServerAddr;
@@ -37,18 +45,21 @@ public class Consumer implements CommandLineRunner {
             // 程序第一次启动从消息队列头获取数据
             consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);
             // 最小消费线程数  不写默认为20
-            consumer.setConsumeThreadMin(5);
+            consumer.setConsumeThreadMin(10);
             // 最大消费线程数  不写默认为20
-            consumer.setConsumeThreadMax(10);
+            consumer.setConsumeThreadMax(20);
 
             //在此监听中消费信息，并返回消费的状态信息
             consumer.registerMessageListener((MessageListenerConcurrently) (messageExtList, context) -> {
                 LogUtil.bindLogId();
                 Message message = messageExtList.get(0);
-                log.info(consumer.getInstanceName()+"接收到了消息："+new String(message.getBody()));
+                String messageStr = new String(message.getBody());
+                log.info(consumer.getInstanceName()+"接收到了消息：" + messageStr);
+                Student student = JSONObject.parseObject(messageStr, Student.class);
+                studentService.addStudent(student);
                 return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
             });
-//            consumer.start();
+            consumer.start();
             log.info("---------->consumer start");
         } catch (Exception e) {
             log.error("", e);

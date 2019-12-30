@@ -55,7 +55,7 @@ public class ConsumerOrder implements CommandLineRunner {
                 log.info(consumer.getInstanceName()+"接收到了消息："+new String(message.getBody()));
                 return ConsumeOrderlyStatus.SUCCESS;
             });
-            consumer.start();
+//            consumer.start();
             log.info("---------->consumer start");
         } catch (Exception e) {
             log.error("", e);

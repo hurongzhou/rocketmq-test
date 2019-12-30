@@ -8,6 +8,7 @@ import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.remoting.common.RemotingHelper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -24,6 +25,8 @@ public class Producer {
     private String consumerTopic;
     @Value("${apache.rocketmq.order.topic}")
     private String consumerOrderTopic;
+    @Value("${apache.rocketmq.student.topic}")
+    private String consumerStudentTopic;
     @Value("${apache.rocketmq.namesrvAddr}")
     private String nameServerAddr;
 
@@ -42,14 +45,35 @@ public class Producer {
         }
     }
 
-    public String send(String body) throws Exception {
-        Message message = new Message(consumerTopic, body.getBytes(RemotingHelper.DEFAULT_CHARSET));
-        StopWatch stop = new StopWatch();
-        stop.start();
-        SendResult result = producer.send(message);
-        log.info("发送响应：MsgId:" + result.getMsgId() + "，发送状态:" + result.getSendStatus());
-        stop.stop();
-        return "{\"MsgId\":\""+result.getMsgId()+"\"}";
+    public String send(String body) {
+        try {
+            Message message = new Message(consumerTopic, body.getBytes(RemotingHelper.DEFAULT_CHARSET));
+            StopWatch stop = new StopWatch();
+            stop.start();
+            SendResult result = producer.send(message);
+            log.info("发送响应：MsgId:" + body + "，发送状态:" + result.getSendStatus());
+            stop.stop();
+            return "{\"MsgId\":\""+result.getMsgId()+"\"}";
+        } catch (Exception e) {
+            log.error("send err", e);
+        }
+        return null;
+    }
+
+    @Async("taskExecutor")
+    public String sendStudent(String body) {
+        try {
+            Message message = new Message(consumerStudentTopic, body.getBytes(RemotingHelper.DEFAULT_CHARSET));
+            StopWatch stop = new StopWatch();
+            stop.start();
+            SendResult result = producer.send(message);
+            log.info("发送响应：MsgId:" + body + "，发送状态:" + result.getSendStatus());
+            stop.stop();
+            return "{\"MsgId\":\""+result.getMsgId()+"\"}";
+        } catch (Exception e) {
+            log.error("send err", e);
+        }
+        return null;
     }
 
     public String sendOrder(String body){

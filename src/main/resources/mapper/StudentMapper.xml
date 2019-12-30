@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.rocketmq.dao.StudentMapper">
+  <resultMap id="BaseResultMap" type="com.example.rocketmq.entity.Student">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="stu_name" jdbcType="VARCHAR" property="stuName" />
+    <result column="stu_phone" jdbcType="VARCHAR" property="stuPhone" />
+    <result column="sex" jdbcType="INTEGER" property="sex" />
+    <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl" />
+    <result column="clazz" jdbcType="VARCHAR" property="clazz" />
+    <result column="grade" jdbcType="INTEGER" property="grade" />
+    <result column="home_address" jdbcType="VARCHAR" property="homeAddress" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, stu_name, stu_phone, sex, avatar_url, clazz, grade, home_address
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tb_student
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_student
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.example.rocketmq.entity.Student" useGeneratedKeys="true">
+    insert into tb_student (stu_name, stu_phone, sex, 
+      avatar_url, clazz, grade, 
+      home_address)
+    values (#{stuName,jdbcType=VARCHAR}, #{stuPhone,jdbcType=VARCHAR}, #{sex,jdbcType=INTEGER}, 
+      #{avatarUrl,jdbcType=VARCHAR}, #{clazz,jdbcType=VARCHAR}, #{grade,jdbcType=INTEGER}, 
+      #{homeAddress,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.example.rocketmq.entity.Student" useGeneratedKeys="true">
+    insert into tb_student
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="stuName != null">
+        stu_name,
+      </if>
+      <if test="stuPhone != null">
+        stu_phone,
+      </if>
+      <if test="sex != null">
+        sex,
+      </if>
+      <if test="avatarUrl != null">
+        avatar_url,
+      </if>
+      <if test="clazz != null">
+        clazz,
+      </if>
+      <if test="grade != null">
+        grade,
+      </if>
+      <if test="homeAddress != null">
+        home_address,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="stuName != null">
+        #{stuName,jdbcType=VARCHAR},
+      </if>
+      <if test="stuPhone != null">
+        #{stuPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null">
+        #{sex,jdbcType=INTEGER},
+      </if>
+      <if test="avatarUrl != null">
+        #{avatarUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="clazz != null">
+        #{clazz,jdbcType=VARCHAR},
+      </if>
+      <if test="grade != null">
+        #{grade,jdbcType=INTEGER},
+      </if>
+      <if test="homeAddress != null">
+        #{homeAddress,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.example.rocketmq.entity.Student">
+    update tb_student
+    <set>
+      <if test="stuName != null">
+        stu_name = #{stuName,jdbcType=VARCHAR},
+      </if>
+      <if test="stuPhone != null">
+        stu_phone = #{stuPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null">
+        sex = #{sex,jdbcType=INTEGER},
+      </if>
+      <if test="avatarUrl != null">
+        avatar_url = #{avatarUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="clazz != null">
+        clazz = #{clazz,jdbcType=VARCHAR},
+      </if>
+      <if test="grade != null">
+        grade = #{grade,jdbcType=INTEGER},
+      </if>
+      <if test="homeAddress != null">
+        home_address = #{homeAddress,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.example.rocketmq.entity.Student">
+    update tb_student
+    set stu_name = #{stuName,jdbcType=VARCHAR},
+      stu_phone = #{stuPhone,jdbcType=VARCHAR},
+      sex = #{sex,jdbcType=INTEGER},
+      avatar_url = #{avatarUrl,jdbcType=VARCHAR},
+      clazz = #{clazz,jdbcType=VARCHAR},
+      grade = #{grade,jdbcType=INTEGER},
+      home_address = #{homeAddress,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
